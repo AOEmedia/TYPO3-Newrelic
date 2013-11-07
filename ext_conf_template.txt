@@ -1,0 +1,5 @@
+	# cat=basic; type=input; label=Newrelic Appname
+appname =
+
+	# cat=basic; type=boolean; label= Add memory usage to custom metric
+track_memory = 1

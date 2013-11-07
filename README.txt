@@ -1,0 +1,1 @@
+Allows to configure appname and sets specific transaction names for Newrelic by using the PHP API: https://docs.newrelic.com/docs/php/the-php-api
