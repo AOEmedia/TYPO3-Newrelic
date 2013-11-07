@@ -54,8 +54,8 @@ class Service implements \t3lib_Singleton {
         }
         //newrelic_custom_metric ("Custom/MemoryUsage", memory_get_usage());
         $memoryUsage = memory_get_usage(true);
-        newrelic_custom_metric ("Custom/MemoryUsageReal", $memoryUsage);
-        newrelic_add_custom_parameter ("MemoryUsageReal", $memoryUsage);
+        newrelic_custom_metric ("Custom/MemoryUsage/RealSize", $memoryUsage);
+        newrelic_add_custom_parameter ("MemoryUsageRealSize", $memoryUsage);
     }
 
     /**
