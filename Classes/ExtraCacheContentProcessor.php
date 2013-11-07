@@ -13,14 +13,15 @@ class ExtraCacheContentProcessor implements \Tx_Extracache_System_ContentProcess
      */
     public function processContent($content) {
         /** @var \AOE\Newrelic\Service $service */
-        $service = t3lib_div::makeInstance('\AOE\Newrelic\Service');
+        $service = \t3lib_div::makeInstance('\AOE\Newrelic\Service');
         $service->addMemoryUsageCustomMetric();
+        return $content;
     }
 
     /**
      * handle exception
      * @param Exception $e
      */
-    public function handleException(Exception $e) {
+    public function handleException(\Exception $e) {
     }
 }
