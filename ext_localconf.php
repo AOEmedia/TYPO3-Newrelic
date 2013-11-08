@@ -1,6 +1,7 @@
 <?php
 $extensionPath = t3lib_extMgm::extPath('newrelic');
 require_once $extensionPath.'Classes/Service.php';
+require_once $extensionPath.'Hooks/class.tx_newrelic_hooks.php';
 
 
 
