@@ -7,8 +7,8 @@ Default Transaction Names
 ==================
 The following transaction names are set in the extension:
 * Base (is the very default transaction name - set in ext_localconf.php)
-* Preprocessing (is the very default transaction name for the frontend index.php, that is normaly overriden in the rendering process.)
-* Static-Cache-Context (only set for requests that are handled by extracache extension)
+* Frontend-Pre (is the very default transaction name for the frontend index.php, that is normaly overriden in the rendering process.)
+* Frontend-StaticCache (only set for requests that are handled by extracache extension)
 * Frontend (all normal TYPO3 FE requests. Additional Parameters and Metrics are set to see memory consumption and cache settings.)
 * Backend (TYPO3 Backend requests)
 * eID-* (set for all eID hooks)

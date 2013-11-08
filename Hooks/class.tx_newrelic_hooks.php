@@ -11,7 +11,7 @@ class tx_newrelic_hooks {
         /** @var \AOE\Newrelic\Service $service */
         $service = t3lib_div::makeInstance('\AOE\Newrelic\Service');
         $service->setConfiguredAppName();
-        $service->setTransactionNameDefault('Preprocessing');
+        $service->setTransactionNameDefault('Frontend-Pre');
     }
 
 
