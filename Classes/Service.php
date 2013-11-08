@@ -70,7 +70,16 @@ class Service implements \t3lib_Singleton {
         $memoryUsage = memory_get_usage(true);
         $this->setCustomMetric('MemoryUsage'.$categoryPostfix,'RealSize',$memoryUsage);
         $this->setCustomMetric('MemoryUsage'.$categoryPostfix.$this->transactionNamePostfix,'RealSize',$memoryUsage);
-        $this->setCustomParameter("MemoryUsageRealSize", $memoryUsage);
+        $this->setCustomParameter("MemoryUsage-RealSize", $memoryUsage);
+        $this->setCustomParameter("MemoryUsage-Size", memory_get_usage());
+        if (!function_exists('memory_get_peak_usage')) {
+            return;
+        }
+        $memoryUsage = memory_get_peak_usage(true);
+        $this->setCustomMetric('MemoryUsage'.$categoryPostfix,'RealPeakSize',$memoryUsage);
+        $this->setCustomMetric('MemoryUsage'.$categoryPostfix.$this->transactionNamePostfix,'RealPeakSize',$memoryUsage);
+        $this->setCustomParameter("MemoryUsage-RealPeakSize", $memoryUsage);
+        $this->setCustomParameter("MemoryUsage-PeakSize", memory_get_peak_usage());
     }
 
     /**
