@@ -11,7 +11,7 @@ class tx_newrelic_hooks {
         /** @var \AOE\Newrelic\Service $service */
         $service = t3lib_div::makeInstance('\AOE\Newrelic\Service');
         $service->setConfiguredAppName();
-        $service->setTransactionName('Preprocessing');
+        $service->setTransactionNameDefault('Preprocessing');
     }
 
 
@@ -27,8 +27,15 @@ class tx_newrelic_hooks {
         if ($temp_extId = t3lib_div::_GP('eID'))        {
             $service->setTransactionNameImmutable('eId_'.$temp_extId);
         }
-        $service->setTransactionNameImmutable('Frontend');
+        $service->setTransactionName('Frontend');
         $service->addMemoryUsageCustomMetric();
         $service->addTslibFeCustomParameters();
+    }
+
+    /**
+     * @param Tx_Extracache_System_Event_Events_EventOnStaticCacheContext $event
+     */
+    public function handleEventOnStaticCacheContext(Tx_Extracache_System_Event_Events_EventOnStaticCacheContext $event) {
+        $GLOBALS['NEWRELIC_STATICCACHECONTEXT'] = $event->getStaticCacheContext();
     }
 }

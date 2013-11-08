@@ -14,7 +14,10 @@ class ExtraCacheContentProcessor implements \Tx_Extracache_System_ContentProcess
     public function processContent($content) {
         /** @var \AOE\Newrelic\Service $service */
         $service = \t3lib_div::makeInstance('\AOE\Newrelic\Service');
-        $service->addMemoryUsageCustomMetric();
+        if (isset($GLOBALS['NEWRELIC_STATICCACHECONTEXT']) && $GLOBALS['NEWRELIC_STATICCACHECONTEXT'] === TRUE) {
+            $service->setTransactionName('Static-Cache-Context');
+            $service->addMemoryUsageCustomMetric('Extracache');
+        }
         return $content;
     }
 

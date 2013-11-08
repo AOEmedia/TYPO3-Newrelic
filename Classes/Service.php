@@ -17,9 +17,24 @@ class Service implements \t3lib_Singleton {
     protected $configuration;
 
     /**
-     * @var boolean
+     * @var string
      */
-    protected $immutableNameWasSet = false;
+    protected $transactionNameDefault;
+
+    /**
+     * @var string
+     */
+    protected $transactionName;
+
+    /**
+     * @var string
+     */
+    protected $transactionNameOverride;
+
+    /**
+     * @var string
+     */
+    protected $transactionNamePostfix = '';
 
     /**
      *
@@ -43,63 +58,118 @@ class Service implements \t3lib_Singleton {
     }
 
     /**
-     * sets the configured app name to newrelic
+     * @param string $categoryPostfix
      */
-    public function addMemoryUsageCustomMetric() {
-        if (!extension_loaded('newrelic') || !function_exists('memory_get_usage')) {
+    public function addMemoryUsageCustomMetric($categoryPostfix = '') {
+        if (!function_exists('memory_get_usage')) {
             return;
         }
         if (!isset($this->configuration['track_memory']) || $this->configuration['track_memory'] != 1) {
             return;
         }
-        //newrelic_custom_metric ("Custom/MemoryUsage", memory_get_usage());
         $memoryUsage = memory_get_usage(true);
-        newrelic_custom_metric ("Custom/MemoryUsage/RealSize", $memoryUsage);
-        newrelic_add_custom_parameter ("MemoryUsageRealSize", $memoryUsage);
+        $this->setCustomMetric('MemoryUsage'.$categoryPostfix,'RealSize',$memoryUsage);
+        $this->setCustomMetric('MemoryUsage'.$categoryPostfix.$this->transactionNamePostfix,'RealSize',$memoryUsage);
+        $this->setCustomParameter("MemoryUsageRealSize", $memoryUsage);
     }
 
     /**
-     * sets the configured app name to newrelic
+     * adds some flags based from TSFE object
      */
     public function addTslibFeCustomParameters() {
-        if (!extension_loaded('newrelic') || !function_exists('memory_get_usage')) {
-            return;
-        }
         if (!isset($GLOBALS['TSFE'])) {
             return;
         }
         $tsfe = $GLOBALS['TSFE'];
         if ($tsfe->no_cache) {
-            newrelic_custom_metric ("TYPO3-NOCACHE", 1);
+            $this->setCustomParameter("TYPO3-NOCACHE", 1);
         }
         if ($tsfe->isINTincScript) {
-            newrelic_custom_metric ("TYPO3-INTincScript", 1);
+            $this->setCustomParameter("TYPO3-INTincScript", 1);
         }
         if ($tsfe->isClientCacheable) {
-            newrelic_custom_metric ("TYPO3-ClientCacheable", 1);
+            $this->setCustomParameter("TYPO3-ClientCacheable", 1);
         }
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     */
+    public function setCustomParameter($key,$value) {
+        if (!extension_loaded('newrelic')) {
+            return;
+        }
+        newrelic_add_custom_parameter ($key, $value);
+    }
+
+    /**
+     * @param $category
+     * @param $key
+     * @param $value
+     */
+    public function setCustomMetric($category,$key,$value) {
+        if (!extension_loaded('newrelic')) {
+            return;
+        }
+        newrelic_custom_metric ("Custom/".$category."/".$key, $value);
     }
 
     /**
      * sets the configured transaction name to newrelic
-     * Once called it will not update the name anymore. Therefore this function can be used in your extension to override the default logic
      * @param $name
      */
-    public function setTransactionNameImmutable($name) {
-        if ($this->immutableNameWasSet) {
+    public function setTransactionNameDefault($name) {
+       $this->transactionNameDefault = $name;
+       $this->setNewrelicTransactionName();
+    }
+
+    /**
+     * sets the configured transaction name to newrelic
+     * @param $name
+     */
+    public function setTransactionName($name) {
+        $this->transactionName = $name;
+        $this->setNewrelicTransactionName();
+    }
+
+    /**
+     * sets the configured transaction name to newrelic
+     * @param $name
+     */
+    public function setTransactionNameOverride($name) {
+        $this->transactionNameOverride = $name;
+        $this->setNewrelicTransactionName();
+    }
+
+    public function addTransactionNamePostfix($name) {
+        if (empty($name)) {
             return;
         }
-        $this->setTransactionName($name);
-        $this->immutableNameWasSet = true;
+        $this->transactionNamePostfix .= '-'.$name;
+        $this->setNewrelicTransactionName();
     }
 
     /**
      * @param $name
      */
-    public function setTransactionName($name) {
-        if (!extension_loaded('newrelic') || !function_exists('memory_get_usage')) {
+    protected function setNewrelicTransactionName() {
+        if (!extension_loaded('newrelic')) {
             return;
         }
-        newrelic_name_transaction ($name);
+        $name = NULL;
+        if (isset($this->transactionNameDefault)) {
+            $name = $this->transactionNameDefault;
+        }
+        if (isset($this->transactionName)) {
+            $name = $this->transactionName;
+        }
+        if (isset($this->transactionNameOverride)) {
+            $name = $this->transactionNameOverride;
+        }
+        if (!is_null($name)) {
+            $name .= $this->transactionNamePostfix;
+            newrelic_name_transaction ($name);
+        }
     }
 }
