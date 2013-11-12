@@ -17,6 +17,7 @@ class ExtraCacheContentProcessor implements \Tx_Extracache_System_ContentProcess
         if (isset($GLOBALS['NEWRELIC_STATICCACHECONTEXT']) && $GLOBALS['NEWRELIC_STATICCACHECONTEXT'] === TRUE) {
             $service->setTransactionName('Frontend-StaticCache');
             $service->addMemoryUsageCustomMetric('Extracache');
+            $service->addTslibFeCustomParameters();
         }
         return $content;
     }

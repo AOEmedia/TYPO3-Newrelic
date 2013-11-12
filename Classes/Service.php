@@ -99,6 +99,32 @@ class Service implements \t3lib_Singleton {
         if ($tsfe->isClientCacheable) {
             $this->setCustomParameter("TYPO3-ClientCacheable", 1);
         }
+        if (isset($tsfe->pageCacheTags) && is_array($tsfe->pageCacheTags)) {
+            $this->setCustomParameter('X-CacheTags',implode('|', $tsfe->pageCacheTags).'|');
+        }
+        // @var tslib_feUserAuth
+        $frontEndUser = $GLOBALS['TSFE']->fe_user;
+        if ($this->isFrontendUserActive($frontEndUser)) {
+            $this->setCustomParameter('FrontendUser','yes');
+        }
+        else {
+            $this->setCustomParameter('FrontendUser','no');
+        }
+
+    }
+
+    /**
+     * @param tslib_feUserAuth $frontendUser
+     * @return bool
+     */
+    protected function isFrontendUserActive($frontendUser) {
+        if (!$frontendUser instanceof tslib_feUserAuth) {
+            return false;
+        }
+        if (isset($frontendUser->user['uid']) && $frontendUser->user['uid']) {
+            return true;
+        }
+        return false;
     }
 
     /**
