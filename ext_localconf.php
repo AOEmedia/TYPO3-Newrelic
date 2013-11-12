@@ -9,6 +9,8 @@ require_once $extensionPath.'Hooks/class.tx_newrelic_hooks.php';
 $service = t3lib_div::makeInstance('\AOE\Newrelic\Service');
 $service->setConfiguredAppName();
 $service->setTransactionNameDefault('Base');
+$service->addCommonRequestParameters();
+
 
 if (isset($_SERVER['HTTP_USER_AGENT']) && $_SERVER['HTTP_USER_AGENT'] == 'CLI Mode') {
     $service->addTransactionNamePostfix('DirectRequest');
