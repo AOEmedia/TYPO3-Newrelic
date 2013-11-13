@@ -24,6 +24,9 @@ if (defined('TYPO3_cliMode') && TYPO3_cliMode) {
     $service->setTransactionName('CliMode');
 }
 
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $service->addTransactionNamePostfix('FORMSUBMIT');
+}
 /**** BACKEND ***/
 if (defined('TYPO3_MODE') && TYPO3_MODE == 'BE') {
     /** @var \AOE\Newrelic\Service $service */
